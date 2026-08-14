@@ -44,17 +44,38 @@ function initPortfolio() {
   const menu = document.querySelector('[data-menu]');
   const navLinks = [...document.querySelectorAll('[data-nav-link]')];
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let menuTransition = 0;
 
   root.classList.add('js');
 
   function setMenu(open, returnFocus = false) {
     if (!menuButton || !menu) return;
+    const transition = ++menuTransition;
     const state = getMenuState(open);
     menuButton.setAttribute('aria-expanded', state.expanded);
-    menu.hidden = state.hidden;
-    menu.classList.toggle('is-opening', open);
     document.body.classList.toggle('menu-open', open);
     if (returnFocus) menuButton.focus();
+
+    if (open) {
+      menu.hidden = false;
+      menu.classList.remove('is-closing');
+      menu.classList.add('is-opening');
+      return;
+    }
+
+    menu.classList.remove('is-opening');
+    if (menu.hidden || reducedMotion.matches || window.innerWidth >= 760) {
+      menu.hidden = true;
+      menu.classList.remove('is-closing');
+      return;
+    }
+
+    menu.classList.add('is-closing');
+    menu.addEventListener('animationend', () => {
+      if (transition !== menuTransition) return;
+      menu.hidden = true;
+      menu.classList.remove('is-closing');
+    }, { once: true });
   }
 
   menuButton?.addEventListener('click', () => {

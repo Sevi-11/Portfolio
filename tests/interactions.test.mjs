@@ -161,6 +161,7 @@ test('stylesheet includes responsive and accessible design contracts', async () 
     '.social-link:hover', '.social-link:active',
     'user-select: none', '-webkit-user-drag: none',
     '.nav-links.is-opening', '@keyframes menu-enter',
+    '.nav-links.is-closing', '@keyframes menu-exit',
     '.project-action svg',
   ]) {
     assert.ok(css.includes(contract), `missing CSS contract: ${contract}`);

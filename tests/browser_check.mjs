@@ -103,8 +103,11 @@ for (const [width, height, name] of [
     assert.equal(await toggle.getAttribute('aria-expanded'), 'true');
     assert.equal(await page.locator('[data-menu]').isVisible(), true);
     assert.equal(await page.locator('[data-menu]').evaluate((menu) => menu.classList.contains('is-opening')), true);
-    await page.keyboard.press('Escape');
+    await toggle.click();
     assert.equal(await toggle.getAttribute('aria-expanded'), 'false');
+    assert.equal(await page.locator('[data-menu]').isVisible(), true);
+    assert.equal(await page.locator('[data-menu]').evaluate((menu) => menu.classList.contains('is-closing')), true);
+    await page.locator('[data-menu]').waitFor({ state: 'hidden' });
   }
 
   if (name === 'desktop') {

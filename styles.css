@@ -279,6 +279,7 @@ p, li, h1, h2, h3 { overflow-wrap: anywhere; }
   .menu-toggle { display: block; }
   .nav-links { position: fixed; inset: 4.5rem 0 auto; max-height: calc(100svh - 4.5rem); flex-direction: column; align-items: stretch; gap: 0; overflow-y: auto; border-bottom: 1px solid var(--line); background: rgba(244,241,234,0.98); padding: 1.2rem var(--gutter) 1.8rem; box-shadow: var(--shadow-sm); }
   .nav-links.is-opening { animation: menu-enter 260ms var(--ease) both; }
+  .nav-links.is-closing { animation: menu-exit 180ms ease-in both; }
   .nav-links[hidden] { display: none; }
   .nav-links a { justify-content: start; min-height: 3.6rem; border-bottom: 1px solid var(--line); font-size: 1rem; }
   .nav-links a::after { display: none; }
@@ -302,6 +303,11 @@ p, li, h1, h2, h3 { overflow-wrap: anywhere; }
 @keyframes menu-enter {
   from { opacity: 0; transform: translateY(-0.75rem); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes menu-exit {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-0.5rem); }
 }
 
 @media (max-width: 31rem) {
