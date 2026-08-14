@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Portfolio of a computer engineer building thoughtful intelligent systems.">
+  <title>Computer Engineer — Portfolio</title>
+  <link rel="icon" href="assets/logo.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500..900;1,6..96,500..900&family=Comfortaa:wght@400..700&family=Inter:wght@400..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="script.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="nav shell" aria-label="Primary navigation">
+      <a class="brand" href="#home" aria-label="Return to home">
+        <img src="assets/logo.png" alt="" width="52" height="52">
+        <span>Portfolio</span>
+      </a>
+
+      <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="primary-menu">
+        <span class="sr-only">Toggle navigation</span>
+        <span aria-hidden="true"></span><span aria-hidden="true"></span>
+      </button>
+
+      <div class="nav-links" id="primary-menu" data-menu hidden>
+        <a href="#home" data-nav-link>Home</a>
+        <a href="#projects" data-nav-link>Projects</a>
+        <a href="#about" data-nav-link>About</a>
+        <a href="#contact" data-nav-link>Contact</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main-content">
+    <section class="hero shell" id="home" aria-labelledby="hero-title">
+      <div class="hero-copy" data-reveal>
+        <p class="eyebrow"><span></span> Computer engineering · Intelligent systems</p>
+        <h1 id="hero-title">Engineering ideas into <em>intelligent</em> systems.</h1>
+        <p class="hero-intro">I bridge hardware, software, and machine learning to turn human intent into useful, considered technology.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#projects">Explore projects <span aria-hidden="true">↘</span></a>
+          <a class="button button-secondary" href="#contact">Start a conversation</a>
+        </div>
+      </div>
+
+      <div class="hero-aside" data-reveal>
+        <div class="orbit-mark" aria-hidden="true"><span></span></div>
+        <p>Based in Manila</p>
+        <p>Focused on ML, IoT, and research-led engineering</p>
+        <div class="social-links" aria-label="Profile links">
+          <a class="social-link" href="https://github.com/Sevi-11" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .7A11.5 11.5 0 0 0 8.36 23.1c.58.1.79-.25.79-.56v-2.02c-3.23.7-3.91-1.37-3.91-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.77 2.72 1.26 3.38.96.1-.75.41-1.26.74-1.55-2.58-.29-5.29-1.29-5.29-5.73 0-1.27.45-2.3 1.2-3.11-.12-.3-.52-1.48.11-3.07 0 0 .98-.32 3.17 1.18a10.97 10.97 0 0 1 5.77 0c2.2-1.5 3.17-1.18 3.17-1.18.64 1.59.24 2.77.12 3.07.74.81 1.19 1.84 1.19 3.11 0 4.46-2.72 5.43-5.3 5.72.42.36.79 1.07.79 2.16v3.02c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .7Z"/></svg>
+          </a>
+          <a class="social-link" href="https://www.linkedin.com/in/sean-vincent-vien-vi%C3%B1as-34390a324/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.34 7.98H1.56V22h3.78V7.98ZM3.45 1A2.2 2.2 0 1 0 3.45 5.4 2.2 2.2 0 0 0 3.45 1ZM22.44 13.96c0-4.22-2.25-6.18-5.26-6.18-2.43 0-3.51 1.33-4.11 2.27V7.98H9.29V22h3.78v-6.94c0-1.83.35-3.61 2.62-3.61 2.24 0 2.27 2.1 2.27 3.73V22h3.78l.7-8.04Z"/></svg>
+          </a>
+          <a class="social-link" href="mailto:vinas.seanvincentvien@gmail.com" aria-label="Email">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5h18v13H3zM3.5 6l8.5 7 8.5-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-index" aria-hidden="true">01</div>
+    </section>
+
+    <section class="section projects" id="projects" aria-labelledby="projects-title">
+      <div class="shell">
+        <header class="section-heading" data-reveal>
+          <div>
+            <p class="section-kicker">Selected work</p>
+            <h2 id="projects-title">Projects built at the edge of curiosity.</h2>
+          </div>
+          <p>Machine learning, connected devices, data systems, and full-stack experiments shaped around real questions.</p>
+        </header>
+
+        <div class="project-grid">
+          <article class="project-card project-featured" data-reveal>
+            <div class="project-visual visual-a" aria-hidden="true"><span>RAG</span><i></i></div>
+            <div class="project-content">
+              <div class="project-meta"><span>01</span><span>Local AI · Full stack</span></div>
+              <h3>AIxia</h3>
+              <p>A locally run document assistant using retrieval-augmented generation to answer questions with grounded context.</p>
+              <ul class="tag-list" aria-label="Technologies"><li>Python</li><li>RAG</li><li>Local LLM</li></ul>
+              <button class="project-action" type="button" data-project-name="AIxia">Case study coming soon <span aria-hidden="true">→</span></button>
+            </div>
+          </article>
+
+          <article class="project-card" data-reveal>
+            <div class="project-visual visual-b" aria-hidden="true"><span>CNN</span><i></i></div>
+            <div class="project-content">
+              <div class="project-meta"><span>02</span><span>Emissions · CNN</span></div>
+              <h3>SMOKi</h3>
+              <p>An IoT-driven vehicle smoke emission classification system using a convolutional neural network with data analytics management.</p>
+              <ul class="tag-list" aria-label="Technologies"><li>IoT</li><li>CNN</li><li>Data Analytics</li></ul>
+              <a class="project-action" href="https://github.com/Sevi-11/SMOKi_Project" target="_blank" rel="noopener noreferrer" data-project-name="SMOKi" aria-label="View SMOKi repository on GitHub"><svg class="github-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .7A11.5 11.5 0 0 0 8.36 23.1c.58.1.79-.25.79-.56v-2.02c-3.23.7-3.91-1.37-3.91-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.77 2.72 1.26 3.38.96.1-.75.41-1.26.74-1.55-2.58-.29-5.29-1.29-5.29-5.73 0-1.27.45-2.3 1.2-3.11-.12-.3-.52-1.48.11-3.07 0 0 .98-.32 3.17 1.18a10.97 10.97 0 0 1 5.77 0c2.2-1.5 3.17-1.18 3.17-1.18.64 1.59.24 2.77.12 3.07.74.81 1.19 1.84 1.19 3.11 0 4.46-2.72 5.43-5.3 5.72.42.36.79 1.07.79 2.16v3.02c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .7Z"/></svg>View repository <span aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+
+          <article class="project-card" data-reveal>
+            <div class="project-visual visual-c" aria-hidden="true"><span>AQ</span><i></i></div>
+            <div class="project-content">
+              <div class="project-meta"><span>03</span><span>Wearable · Air quality</span></div>
+              <h3>AeroBand</h3>
+              <p>An IoT-powered wearable device for real-time air quality monitoring and pollution detection.</p>
+              <ul class="tag-list" aria-label="Technologies"><li>IoT</li><li>Wearable</li><li>Environmental Sensors</li></ul>
+              <a class="project-action" href="https://github.com/Sevi-11/AeroBand_Project" target="_blank" rel="noopener noreferrer" data-project-name="AeroBand" aria-label="View AeroBand repository on GitHub"><svg class="github-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .7A11.5 11.5 0 0 0 8.36 23.1c.58.1.79-.25.79-.56v-2.02c-3.23.7-3.91-1.37-3.91-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.77 2.72 1.26 3.38.96.1-.75.41-1.26.74-1.55-2.58-.29-5.29-1.29-5.29-5.73 0-1.27.45-2.3 1.2-3.11-.12-.3-.52-1.48.11-3.07 0 0 .98-.32 3.17 1.18a10.97 10.97 0 0 1 5.77 0c2.2-1.5 3.17-1.18 3.17-1.18.64 1.59.24 2.77.12 3.07.74.81 1.19 1.84 1.19 3.11 0 4.46-2.72 5.43-5.3 5.72.42.36.79 1.07.79 2.16v3.02c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .7Z"/></svg>View repository <span aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+
+          <article class="project-card" data-reveal>
+            <div class="project-visual visual-d" aria-hidden="true"><span>DT</span><i></i></div>
+            <div class="project-content">
+              <div class="project-meta"><span>04</span><span>Supervised learning</span></div>
+              <h3>Classification Lab</h3>
+              <p>A comparative analysis of Decision Trees, C4.5, CART, and ID3 across interpretable classification tasks.</p>
+              <ul class="tag-list" aria-label="Technologies"><li>Scikit-learn</li><li>Data</li><li>Research</li></ul>
+              <a class="project-action" href="https://github.com/Sevi-11/ClassificationAlgorithms" target="_blank" rel="noopener noreferrer" data-project-name="Classification Lab" aria-label="View Classification Lab repository on GitHub"><svg class="github-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .7A11.5 11.5 0 0 0 8.36 23.1c.58.1.79-.25.79-.56v-2.02c-3.23.7-3.91-1.37-3.91-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.77 2.72 1.26 3.38.96.1-.75.41-1.26.74-1.55-2.58-.29-5.29-1.29-5.29-5.73 0-1.27.45-2.3 1.2-3.11-.12-.3-.52-1.48.11-3.07 0 0 .98-.32 3.17 1.18a10.97 10.97 0 0 1 5.77 0c2.2-1.5 3.17-1.18 3.17-1.18.64 1.59.24 2.77.12 3.07.74.81 1.19 1.84 1.19 3.11 0 4.46-2.72 5.43-5.3 5.72.42.36.79 1.07.79 2.16v3.02c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .7Z"/></svg>View repository <span aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+
+          <article class="project-card" data-reveal>
+            <div class="project-visual visual-e" aria-hidden="true"><span>RF</span><i></i></div>
+            <div class="project-content">
+              <div class="project-meta"><span>05</span><span>Health data · ML</span></div>
+              <h3>Anomaly Detection</h3>
+              <p>A Random Forest study applied to breast-cancer data to examine reliable and explainable anomaly classification.</p>
+              <ul class="tag-list" aria-label="Technologies"><li>Random Forest</li><li>Python</li><li>Analysis</li></ul>
+              <a class="project-action" href="https://github.com/Sevi-11/SupervisedLearning-RandomForest" target="_blank" rel="noopener noreferrer" data-project-name="Anomaly Detection" aria-label="View Anomaly Detection repository on GitHub"><svg class="github-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .7A11.5 11.5 0 0 0 8.36 23.1c.58.1.79-.25.79-.56v-2.02c-3.23.7-3.91-1.37-3.91-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.77 2.72 1.26 3.38.96.1-.75.41-1.26.74-1.55-2.58-.29-5.29-1.29-5.29-5.73 0-1.27.45-2.3 1.2-3.11-.12-.3-.52-1.48.11-3.07 0 0 .98-.32 3.17 1.18a10.97 10.97 0 0 1 5.77 0c2.2-1.5 3.17-1.18 3.17-1.18.64 1.59.24 2.77.12 3.07.74.81 1.19 1.84 1.19 3.11 0 4.46-2.72 5.43-5.3 5.72.42.36.79 1.07.79 2.16v3.02c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .7Z"/></svg>View repository <span aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+
+          <article class="project-card" data-reveal>
+            <div class="project-visual visual-f" aria-hidden="true"><span>AP</span><i></i></div>
+            <div class="project-content">
+              <div class="project-meta"><span>06</span><span>Data mining</span></div>
+              <h3>Grocery Patterns</h3>
+              <p>An Apriori-based study that uncovers frequently bought-together products and practical association rules.</p>
+              <ul class="tag-list" aria-label="Technologies"><li>Apriori</li><li>Python</li><li>Insights</li></ul>
+              <a class="project-action" href="https://github.com/Sevi-11/UnsupervisedLearning-Apriori" target="_blank" rel="noopener noreferrer" data-project-name="Grocery Patterns" aria-label="View Grocery Patterns repository on GitHub"><svg class="github-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .7A11.5 11.5 0 0 0 8.36 23.1c.58.1.79-.25.79-.56v-2.02c-3.23.7-3.91-1.37-3.91-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.77 2.72 1.26 3.38.96.1-.75.41-1.26.74-1.55-2.58-.29-5.29-1.29-5.29-5.73 0-1.27.45-2.3 1.2-3.11-.12-.3-.52-1.48.11-3.07 0 0 .98-.32 3.17 1.18a10.97 10.97 0 0 1 5.77 0c2.2-1.5 3.17-1.18 3.17-1.18.64 1.59.24 2.77.12 3.07.74.81 1.19 1.84 1.19 3.11 0 4.46-2.72 5.43-5.3 5.72.42.36.79 1.07.79 2.16v3.02c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .7Z"/></svg>View repository <span aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+        </div>
+        <p class="status-message" data-project-status role="status" tabindex="-1"></p>
+      </div>
+    </section>
+
+    <section class="section about" id="about" aria-labelledby="about-title">
+      <div class="shell">
+        <header class="section-heading about-heading" data-reveal>
+          <div><p class="section-kicker">Behind the work</p><h2 id="about-title">A builder with a researcher’s curiosity.</h2></div>
+          <p>I care about the full path from an early circuit or dataset to an experience that feels natural in someone’s hands.</p>
+        </header>
+
+        <div class="about-grid">
+          <figure class="portrait-card" data-reveal>
+            <img src="assets/portrait.jpg" alt="Portrait of the portfolio owner" width="900" height="1100">
+            <figcaption>Computer engineer · Manila</figcaption>
+          </figure>
+
+          <article class="story-card bento-card" data-reveal>
+            <p class="card-label">My trajectory</p>
+            <h3>From circuits to systems that learn.</h3>
+            <p>I started in embedded systems, building IoT sensors for air-quality monitoring. The data those sensors produced pulled me toward computer vision, machine learning, and full-stack RAG pipelines running local language models.</p>
+            <p>Today, I’m building toward a research-track path in ML—with the long-term goal of contributing genuinely new ideas to the field.</p>
+          </article>
+
+          <article class="education-card bento-card" data-reveal>
+            <div class="education-logos">
+              <img src="assets/ue.svg" alt="University of the East" width="64" height="64">
+              <img src="assets/engineering.svg" alt="Engineering recognition badge" width="64" height="64">
+            </div>
+            <p class="card-label">Education & recognition</p>
+            <h3>B.S. Computer Engineering</h3>
+            <ul><li>Magna Cum Laude</li><li>Leadership Awardee for Men</li><li>College Distinguished Graduate</li></ul>
+          </article>
+
+          <blockquote class="quote-card bento-card" data-reveal>
+            <p>“Through it all.<br><em>Above it all.</em>”</p>
+          </blockquote>
+
+          <article class="toolkit-card bento-card" data-reveal>
+            <p class="card-label">Working toolkit</p>
+            <h3>Across the engineering stack</h3>
+            <div class="skill-groups">
+              <div><span>Interface</span><p>HTML · CSS · JavaScript · React</p></div>
+              <div><span>Systems</span><p>Python · C++ · PHP · IoT</p></div>
+              <div><span>Data</span><p>PostgreSQL · MySQL · Machine Learning</p></div>
+              <div><span>Delivery</span><p>Docker · Git · GitHub</p></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section contact" id="contact" aria-labelledby="contact-title">
+      <div class="shell contact-layout">
+        <div class="contact-copy" data-reveal>
+          <p class="section-kicker">Contact</p>
+          <h2 id="contact-title">Have a thoughtful problem to solve?</h2>
+          <p>Tell me what you’re building, investigating, or trying to understand. This preview keeps your message on this device.</p>
+          <div class="availability"><span aria-hidden="true"></span> Open to meaningful collaborations</div>
+          <div class="social-links" aria-label="Contact links">
+            <a class="social-link" href="https://github.com/Sevi-11" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .7A11.5 11.5 0 0 0 8.36 23.1c.58.1.79-.25.79-.56v-2.02c-3.23.7-3.91-1.37-3.91-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.77 2.72 1.26 3.38.96.1-.75.41-1.26.74-1.55-2.58-.29-5.29-1.29-5.29-5.73 0-1.27.45-2.3 1.2-3.11-.12-.3-.52-1.48.11-3.07 0 0 .98-.32 3.17 1.18a10.97 10.97 0 0 1 5.77 0c2.2-1.5 3.17-1.18 3.17-1.18.64 1.59.24 2.77.12 3.07.74.81 1.19 1.84 1.19 3.11 0 4.46-2.72 5.43-5.3 5.72.42.36.79 1.07.79 2.16v3.02c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .7Z"/></svg>
+            </a>
+            <a class="social-link" href="https://www.linkedin.com/in/sean-vincent-vien-vi%C3%B1as-34390a324/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.34 7.98H1.56V22h3.78V7.98ZM3.45 1A2.2 2.2 0 1 0 3.45 5.4 2.2 2.2 0 0 0 3.45 1ZM22.44 13.96c0-4.22-2.25-6.18-5.26-6.18-2.43 0-3.51 1.33-4.11 2.27V7.98H9.29V22h3.78v-6.94c0-1.83.35-3.61 2.62-3.61 2.24 0 2.27 2.1 2.27 3.73V22h3.78l.7-8.04Z"/></svg>
+            </a>
+            <a class="social-link" href="mailto:vinas.seanvincentvien@gmail.com" aria-label="Email">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5h18v13H3zM3.5 6l8.5 7 8.5-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <form class="contact-form" data-contact-form data-reveal>
+          <div class="field-row">
+            <div class="field"><label for="name">Your name</label><input id="name" name="name" type="text" autocomplete="name" required></div>
+            <div class="field"><label for="email">Email address</label><input id="email" name="email" type="email" autocomplete="email" required></div>
+          </div>
+          <div class="field"><label for="message">What’s on your mind?</label><textarea id="message" name="message" rows="5" required></textarea></div>
+          <div class="form-footer">
+            <button class="button button-primary" type="submit">Send with Gmail <span aria-hidden="true">↗</span></button>
+            <p>Gmail opens a prepared draft for your review.</p>
+          </div>
+          <p class="status-message" data-form-status role="status" tabindex="-1"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell"><p>Computer Engineer</p><p>Designed with intent · <span data-current-year>2026</span></p><a href="#home">Back to top <span aria-hidden="true">↑</span></a></div>
+  </footer>
+</body>
+</html>
