@@ -1,5 +1,20 @@
 [
   {
+    "id": "post-640830",
+    "title": "Blog Posting Test",
+    "date": "2026-08-28",
+    "createdAt": "2026-08-28T10:24:00.830Z",
+    "tags": [
+      "prototype testing"
+    ],
+    "content": [
+      {
+        "type": "text",
+        "body": "This is a test if I can publish post on my website using Github Pages! Github Pages only support static website. So if this works, THERE'S A LOOPHOLE!!"
+      }
+    ]
+  },
+  {
     "id": "post-mtcrqzu9",
     "title": "Project Progress Update",
     "date": "2026-08-28",
