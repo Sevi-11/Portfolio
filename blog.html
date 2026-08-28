@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A personal blog documenting a computer engineer's career path — thoughts, projects, and milestones.">
+  <title>Blog — Portfolio</title>
+  <link rel="icon" href="assets/logo.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500..900;1,6..96,500..900&family=Comfortaa:wght@400..700&family=Inter:wght@400..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="blog.css">
+  <script type="module" src="blog.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="nav shell" aria-label="Primary navigation">
+      <a class="brand" href="index.html#home" aria-label="Return to home">
+        <img src="assets/logo.png" alt="" width="52" height="52">
+        <span>Portfolio</span>
+      </a>
+
+      <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="primary-menu">
+        <span class="sr-only">Toggle navigation</span>
+        <span aria-hidden="true"></span><span aria-hidden="true"></span>
+      </button>
+
+      <div class="nav-links" id="primary-menu" data-menu hidden>
+        <a href="index.html#home" data-nav-link>Home</a>
+        <a href="index.html#projects" data-nav-link>Projects</a>
+        <a href="index.html#about" data-nav-link>About</a>
+        <a href="index.html#contact" data-nav-link>Contact</a>
+        <a href="blog.html" data-nav-link class="is-active" aria-current="page">Blog</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main-content">
+    <section class="hero shell" id="blog-hero" aria-labelledby="blog-title">
+      <div class="hero-copy" data-reveal>
+        <p class="eyebrow"><span></span> Personal journal</p>
+        <h1 id="blog-title">Notes from the <em>path forward.</em></h1>
+        <p class="hero-intro">A candid record of milestones, experiments, and reflections as I navigate a career in machine learning and intelligent systems.</p>
+      </div>
+      <div class="hero-aside" data-reveal>
+        <div class="orbit-mark" aria-hidden="true"><span></span></div>
+        <p>Updated periodically</p>
+        <p>Thoughts on work, research, and growth</p>
+      </div>
+      <div class="hero-index" aria-hidden="true">05</div>
+    </section>
+
+    <section class="section blog-composer" id="compose" aria-labelledby="compose-title" hidden>
+      <div class="shell">
+        <header class="section-heading" data-reveal>
+          <div>
+            <p class="section-kicker">New entry</p>
+            <h2 id="compose-title">Write something real.</h2>
+          </div>
+        </header>
+
+        <div class="composer-layout" data-reveal>
+          <form class="composer-form" data-composer-form>
+            <div class="field-row">
+              <div class="field"><label for="post-title">Title</label><input id="post-title" name="title" type="text" required placeholder="What's on your mind?"></div>
+              <div class="field field-date"><label for="post-date">Date</label><input id="post-date" name="date" type="date" required></div>
+            </div>
+            <div class="field"><label for="post-tags">Tags</label><input id="post-tags" name="tags" type="text" placeholder="career, milestone, ML (comma-separated)"></div>
+
+            <div class="blocks-header">
+              <label>Content blocks</label>
+              <div class="block-adders">
+                <button type="button" class="block-add-btn" data-add-block="text">+ Text</button>
+                <button type="button" class="block-add-btn" data-add-block="image">+ Image</button>
+                <button type="button" class="block-add-btn" data-add-block="video">+ Video</button>
+              </div>
+            </div>
+            <div class="blocks-list" id="blocks-list" data-blocks-list></div>
+
+            <div class="composer-actions">
+              <button class="button button-secondary" type="button" data-preview-toggle>Preview</button>
+              <button class="button button-primary" type="button" data-publish>Publish post <span aria-hidden="true">↑</span></button>
+            </div>
+            <p class="composer-status" data-composer-status role="status" tabindex="-1"></p>
+          </form>
+
+          <div class="composer-preview" id="composer-preview" data-preview hidden>
+            <p class="preview-label">Preview</p>
+            <div class="preview-card" id="preview-card"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section blog-feed" id="blog" aria-labelledby="feed-title">
+      <div class="shell">
+        <header class="section-heading" data-reveal>
+          <div>
+            <p class="section-kicker">All entries</p>
+            <h2 id="feed-title">The latest from here.</h2>
+          </div>
+          <div class="blog-filters" data-reveal>
+            <button class="filter-btn is-active" type="button" data-tag="all">All</button>
+          </div>
+        </header>
+
+        <div class="posts-container" id="posts-container" role="feed" aria-label="Blog posts">
+          <p class="loading-message" data-loading>Loading posts...</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell">
+      <p>Computer Engineer</p>
+      <p>Designed with intent · <span data-current-year>2026</span></p>
+      <a href="#blog-hero">Back to top <span aria-hidden="true">↑</span></a>
+      <button type="button" class="owner-link" data-owner-signin>Owner sign-in</button>
+    </div>
+    <div class="owner-panel" data-owner-panel hidden>
+      <div class="shell owner-panel-inner">
+        <div class="field">
+          <label for="owner-token">GitHub token</label>
+          <input id="owner-token" type="password" placeholder="github_pat_..." autocomplete="off">
+        </div>
+        <div class="owner-panel-actions">
+          <button class="button button-secondary" type="button" data-owner-cancel>Cancel</button>
+          <button class="button button-primary" type="button" data-owner-unlock>Unlock composer</button>
+        </div>
+        <p class="owner-panel-hint">Use a fine-grained token scoped to this repo only, with Contents: Read and write. Stored only in this browser.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,98 @@
+[
+  {
+    "id": "post-mtcrqzu9",
+    "title": "Project Progress Update",
+    "date": "2026-08-28",
+    "createdAt": "2026-08-28T09:48:21.105Z",
+    "tags": [
+      "project-update",
+      "milestone",
+      "integration"
+    ],
+    "content": [
+      {
+        "type": "text",
+        "body": "I am currently developing UIs for multiple projects, so that I can instead show the actual demo of the system rather than the redirect towards Github Repo, so stay tuned!!"
+      }
+    ]
+  },
+  {
+    "id": "post-mtcrbbui",
+    "title": "Junior AI Developer at AutoMate PH",
+    "date": "2026-08-17",
+    "createdAt": "2026-08-28T09:36:10.170Z",
+    "tags": [
+      "career",
+      "ai developer",
+      "future",
+      "milestone"
+    ],
+    "content": [
+      {
+        "type": "text",
+        "body": "As of August 17, 2026. I am officially a Junior Developer at AutoMate PH. This is my first ever job towards my future goal, which is to be an AI Engineer. \n\nI am actually happy since I got with my trusted friend, Skhart Mercado. Total buddies since college, and now, workmates!\n\nHoping for a successful career journey!"
+      }
+    ]
+  },
+  {
+    "id": "post-001",
+    "title": "Launching This Portfolio",
+    "date": "2026-08-18",
+    "createdAt": "2026-08-18T10:30:00Z",
+    "tags": [
+      "milestone",
+      "career"
+    ],
+    "content": [
+      {
+        "type": "text",
+        "body": "Today I officially launched my portfolio website. It represents months of work across machine learning, IoT, and full-stack projects. Building this site was an exercise in restraint — choosing what to show, how to frame it, and what story it tells about where I'm headed."
+      },
+      {
+        "type": "text",
+        "body": "The long-term goal is a research-track path in machine learning. Every project here — from smoke emission detection with CNNs to locally run RAG pipelines — is a stepping stone toward contributing genuinely new ideas to the field."
+      }
+    ]
+  },
+  {
+    "id": "post-002",
+    "title": "AIxia: Running RAG Locally",
+    "date": "2026-07-10",
+    "createdAt": "2026-07-10T15:45:00Z",
+    "tags": [
+      "AI",
+      "project-update"
+    ],
+    "content": [
+      {
+        "type": "text",
+        "body": "Started working on AIxia — a document assistant that uses retrieval-augmented generation to answer questions grounded in your own files. The challenge isn't just plumbing RAG together; it's making the responses feel trustworthy when the context window is limited and the embeddings need to actually capture meaning."
+      },
+      {
+        "type": "text",
+        "body": "Currently experimenting with different chunking strategies and local LLM backends. The goal is zero cloud dependency — everything runs on your machine."
+      }
+    ]
+  },
+  {
+    "id": "post-003",
+    "title": "SMOKi Project Complete",
+    "date": "2026-05-22",
+    "createdAt": "2026-05-22T09:15:00Z",
+    "tags": [
+      "IoT",
+      "ML",
+      "milestone"
+    ],
+    "content": [
+      {
+        "type": "text",
+        "body": "Wrapped up SMOKi — an IoT-driven vehicle smoke emission classification system. The hardware captures exhaust samples, a CNN classifies emission levels, and a data analytics dashboard surfaces patterns across test runs."
+      },
+      {
+        "type": "text",
+        "body": "The hardest part was getting reliable sensor readings in non-laboratory conditions. Noise from temperature, humidity, and sensor drift required careful preprocessing before anything touched the model."
+      }
+    ]
+  }
+]
