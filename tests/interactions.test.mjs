@@ -75,10 +75,10 @@ test('document provides the four-section accessible portfolio structure', async 
   }
   assert.match(html, /class="skip-link"/);
   assert.match(html, /data-menu-toggle[^>]+aria-expanded="false"/);
-  assert.equal((html.match(/data-project-name=/g) ?? []).length, 6);
+  assert.equal((html.match(/data-project-name=/g) ?? []).length, 7);
   assert.equal((html.match(/<button[^>]+data-project-name=/g) ?? []).length, 1);
-  assert.equal((html.match(/<a[^>]+data-project-name=/g) ?? []).length, 5);
-  assert.equal((html.match(/class="github-mark"/g) ?? []).length, 5);
+  assert.equal((html.match(/<a[^>]+data-project-name=/g) ?? []).length, 6);
+  assert.equal((html.match(/class="github-mark"/g) ?? []).length, 6);
   assert.match(html, /type="submit">Send with Gmail/);
   assert.match(html, /Gmail opens a prepared draft/);
   assert.match(html, /<label[^>]+for="name"/);
@@ -98,6 +98,7 @@ test('body contains only the approved external and email destinations', async ()
   ];
 
   const approvedProjects = [
+    'https://github.com/Sevi-11/SentryScan',
     'https://github.com/Sevi-11/SMOKi_Project',
     'https://github.com/Sevi-11/AeroBand_Project',
     'https://github.com/Sevi-11/ClassificationAlgorithms',
@@ -105,17 +106,18 @@ test('body contains only the approved external and email destinations', async ()
     'https://github.com/Sevi-11/UnsupervisedLearning-Apriori',
   ];
 
-  assert.equal(destinations.length, 11);
+  assert.equal(destinations.length, 12);
   assert.deepEqual([...new Set(destinations)].sort(), [...approvedProfiles, ...approvedProjects].sort());
   assert.equal((body.match(/class="social-links"/g) ?? []).length, 2);
   assert.equal((body.match(/class="social-link"/g) ?? []).length, 6);
   assert.equal((body.match(/aria-label="(GitHub|LinkedIn|Email)"/g) ?? []).length, 6);
-  assert.equal((body.match(/target="_blank" rel="noopener noreferrer"/g) ?? []).length, 9);
+  assert.equal((body.match(/target="_blank" rel="noopener noreferrer"/g) ?? []).length, 10);
 });
 
 test('project repository destinations are assigned respectfully and AIxia remains unlinked', async () => {
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const expected = new Map([
+    ['SentryScan', 'https://github.com/Sevi-11/SentryScan'],
     ['SMOKi', 'https://github.com/Sevi-11/SMOKi_Project'],
     ['AeroBand', 'https://github.com/Sevi-11/AeroBand_Project'],
     ['Classification Lab', 'https://github.com/Sevi-11/ClassificationAlgorithms'],

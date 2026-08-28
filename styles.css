@@ -147,6 +147,7 @@ p, li, h1, h2, h3 { overflow-wrap: anywhere; }
 .visual-d { background: radial-gradient(circle at 70% 25%, #9a8069, #514338 70%); }
 .visual-e { background: radial-gradient(circle at 20% 25%, #876f75, #49373c 70%); }
 .visual-f { background: radial-gradient(circle at 75% 75%, #6f8294, #344552 70%); }
+.visual-g { background: radial-gradient(circle at 50% 30%, #6f9a8a, #33514a 70%); }
 .project-content { display: flex; flex-direction: column; padding: clamp(1.4rem, 2.4vw, 2.25rem); }
 .project-meta { display: flex; justify-content: space-between; gap: 1rem; color: #aeb5c2; font: 600 0.67rem/1.4 var(--friendly); letter-spacing: 0.08em; text-transform: uppercase; }
 .project-content h3 { margin: auto 0 0.8rem; padding-top: 2rem; font: 650 clamp(1.8rem, 2.5vw, 2.6rem)/1 var(--display); letter-spacing: -0.035em; }
