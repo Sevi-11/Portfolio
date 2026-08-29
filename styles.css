@@ -25,6 +25,7 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 html {
+  font-size: 90%;
   scroll-behavior: smooth;
   scrollbar-width: none;
 }
@@ -167,7 +168,8 @@ p, li, h1, h2, h3 { overflow-wrap: anywhere; }
   grid-template-columns: repeat(12, minmax(0, 1fr));
   grid-template-areas:
     'portrait portrait portrait portrait story story story story story education education education'
-    'portrait portrait portrait portrait quote quote quote toolkit toolkit toolkit toolkit toolkit';
+    'portrait portrait portrait portrait quote quote quote toolkit toolkit toolkit toolkit toolkit'
+    'portrait portrait portrait portrait resume resume resume toolkit toolkit toolkit toolkit toolkit';
   gap: clamp(0.8rem, 1.8vw, 1.4rem);
   align-items: stretch;
 }
@@ -190,6 +192,20 @@ p, li, h1, h2, h3 { overflow-wrap: anywhere; }
 .quote-card { grid-area: quote; display: grid; place-items: center; min-height: 13rem; margin: 0; background: var(--soft); text-align: center; }
 .quote-card p { margin: 0; font: 650 clamp(2rem, 2.4vw, 2.6rem)/1.05 var(--display); }
 .quote-card em { color: var(--slate); }
+
+.resume-card {
+  grid-area: resume;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  text-align: left;
+  text-decoration: none;
+  color: var(--navy);
+  cursor: pointer;
+}
+.resume-icon { width: 1.9rem; height: 1.9rem; flex-shrink: 0; }
+.resume-card-text strong { display: block; font: 650 1.02rem/1.2 var(--display); letter-spacing: -0.01em; }
+.resume-card-text small { display: block; margin-top: 0.2rem; color: var(--slate); font: 500 0.72rem/1.4 var(--friendly); }
 .toolkit-card { grid-area: toolkit; }
 .skill-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--line); }
 .skill-groups div { padding: 1.2rem 1rem 0 0; border-bottom: 1px solid var(--line); }
@@ -255,7 +271,12 @@ p, li, h1, h2, h3 { overflow-wrap: anywhere; }
   .button-secondary:hover { border-color: var(--navy); background: var(--paper); }
   .project-card:hover { border-color: rgba(255,255,255,0.28); box-shadow: var(--shadow-lg); transform: translateY(-0.35rem); }
   .project-action:hover span { transform: translateX(0.3rem); }
+  .resume-card:hover { border-color: rgba(10,17,40,0.25); box-shadow: var(--shadow-lg); transform: translateY(-0.2rem); }
+  .resume-card:hover small span { transform: translateY(0.15rem); }
 }
+
+.resume-card { transition: border-color var(--fast), box-shadow var(--medium) var(--ease), transform var(--medium) var(--ease); }
+.resume-card small span { display: inline-block; transition: transform var(--fast); }
 
 @media (max-width: 68rem) {
   .hero { grid-template-columns: minmax(0, 1fr) 12rem; }
@@ -265,8 +286,9 @@ p, li, h1, h2, h3 { overflow-wrap: anywhere; }
     grid-template-areas:
       'portrait story'
       'education quote'
+      'resume resume'
       'toolkit toolkit';
-    grid-template-rows: minmax(24rem, auto) auto auto;
+    grid-template-rows: minmax(24rem, auto) auto auto auto;
   }
 }
 
@@ -294,7 +316,7 @@ p, li, h1, h2, h3 { overflow-wrap: anywhere; }
   .project-visual { min-height: 0; aspect-ratio: 16 / 10; }
   .about-grid {
     grid-template-columns: 1fr;
-    grid-template-areas: 'portrait' 'story' 'education' 'quote' 'toolkit';
+    grid-template-areas: 'portrait' 'story' 'education' 'quote' 'resume' 'toolkit';
     grid-template-rows: auto;
   }
   .portrait-card { aspect-ratio: 4 / 5; }
