@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const dataFile = join(root, 'blog-data.json');
+const archiveFile = join(root, 'blog-archive.json');
 const port = process.env.PORT ? Number(process.env.PORT) : 5173;
 const maxBodyBytes = 30 * 1024 * 1024;
 
@@ -94,6 +95,35 @@ async function handlePublish(req, res) {
   }
 }
 
+async function handleDelete(req, res, postId, archive) {
+  try {
+    const existingRaw = await readFile(dataFile, 'utf8').catch(() => '[]');
+    const posts = JSON.parse(existingRaw || '[]');
+    const index = posts.findIndex((p) => p.id === postId);
+    if (index === -1) {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Post not found.' }));
+      return;
+    }
+
+    const [removed] = posts.splice(index, 1);
+    await writeFile(dataFile, JSON.stringify(posts, null, 2) + '\n', 'utf8');
+
+    if (archive) {
+      const archiveRaw = await readFile(archiveFile, 'utf8').catch(() => '[]');
+      const archivePosts = JSON.parse(archiveRaw || '[]');
+      archivePosts.unshift({ ...removed, archivedAt: new Date().toISOString() });
+      await writeFile(archiveFile, JSON.stringify(archivePosts, null, 2) + '\n', 'utf8');
+    }
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(removed));
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err.message || 'Failed to delete post.' }));
+  }
+}
+
 async function serveStatic(req, res) {
   let urlPath = decodeURIComponent(req.url.split('?')[0]);
   if (urlPath === '/') urlPath = '/index.html';
@@ -117,12 +147,26 @@ async function serveStatic(req, res) {
 }
 
 const server = createServer((req, res) => {
-  if (req.url === '/api/posts') {
+  const urlPath = req.url.split('?')[0];
+
+  if (urlPath === '/api/posts') {
     if (req.method === 'POST') return handlePublish(req, res);
     res.writeHead(405, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Method not allowed.' }));
     return;
   }
+
+  const deleteMatch = urlPath.match(/^\/api\/posts\/([^/]+)$/);
+  if (deleteMatch) {
+    if (req.method === 'DELETE') {
+      const mode = new URL(req.url, `http://${req.headers.host}`).searchParams.get('mode');
+      return handleDelete(req, res, decodeURIComponent(deleteMatch[1]), mode !== 'forever');
+    }
+    res.writeHead(405, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Method not allowed.' }));
+    return;
+  }
+
   serveStatic(req, res);
 });
 

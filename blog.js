@@ -4,6 +4,7 @@ const GITHUB_OWNER = 'Sevi-11';
 const GITHUB_REPO = 'Portfolio';
 const GITHUB_BRANCH = 'master';
 const GITHUB_DATA_PATH = 'blog-data.json';
+const GITHUB_ARCHIVE_PATH = 'blog-archive.json';
 const OWNER_TOKEN_KEY = 'portfolio_owner_token';
 
 export function isLocalHost(hostname = location.hostname) {
@@ -34,34 +35,72 @@ function decodeBase64Utf8(b64) {
   return new TextDecoder().decode(bytes);
 }
 
-async function publishViaGithubApi(post, token) {
-  const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_DATA_PATH}`;
-  const headers = {
-    Authorization: `token ${token}`,
-    Accept: 'application/vnd.github+json',
-  };
-
-  const getRes = await fetch(`${apiUrl}?ref=${GITHUB_BRANCH}`, { headers });
-  if (!getRes.ok) throw new Error(`Couldn't read blog-data.json from GitHub (HTTP ${getRes.status}). Check your token.`);
-  const file = await getRes.json();
-  const currentPosts = JSON.parse(decodeBase64Utf8(file.content));
-  const updatedPosts = [post, ...currentPosts];
-
-  const putRes = await fetch(apiUrl, {
-    method: 'PUT',
-    headers: { ...headers, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      message: `Add blog post: ${post.title}`,
-      content: encodeBase64Utf8(JSON.stringify(updatedPosts, null, 2) + '\n'),
-      sha: file.sha,
-      branch: GITHUB_BRANCH,
-    }),
+async function getGithubFile(path, token) {
+  const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`;
+  const res = await fetch(url, {
+    headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github+json' },
   });
-  if (!putRes.ok) {
-    const err = await putRes.json().catch(() => null);
-    throw new Error(err?.message || `GitHub publish failed (HTTP ${putRes.status}).`);
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`Couldn't read ${path} from GitHub (HTTP ${res.status}). Check your token.`);
+  const file = await res.json();
+  return { sha: file.sha, posts: JSON.parse(decodeBase64Utf8(file.content)) };
+}
+
+async function putGithubFile(path, posts, sha, message, token) {
+  const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`;
+  const body = {
+    message,
+    content: encodeBase64Utf8(JSON.stringify(posts, null, 2) + '\n'),
+    branch: GITHUB_BRANCH,
+  };
+  if (sha) body.sha = sha;
+
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      Authorization: `token ${token}`,
+      Accept: 'application/vnd.github+json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => null);
+    throw new Error(err?.message || `GitHub write to ${path} failed (HTTP ${res.status}).`);
   }
+}
+
+async function publishViaGithubApi(post, token) {
+  const dataFile = await getGithubFile(GITHUB_DATA_PATH, token);
+  if (!dataFile) throw new Error(`${GITHUB_DATA_PATH} not found in repo.`);
+  const updatedPosts = [post, ...dataFile.posts];
+  await putGithubFile(GITHUB_DATA_PATH, updatedPosts, dataFile.sha, `Add blog post: ${post.title}`, token);
   return post;
+}
+
+async function deletePostViaGithubApi(postId, token, { archive = true } = {}) {
+  const dataFile = await getGithubFile(GITHUB_DATA_PATH, token);
+  if (!dataFile) throw new Error(`${GITHUB_DATA_PATH} not found in repo.`);
+  const index = dataFile.posts.findIndex((p) => p.id === postId);
+  if (index === -1) throw new Error('Post not found.');
+
+  const [removed] = dataFile.posts.splice(index, 1);
+  await putGithubFile(
+    GITHUB_DATA_PATH,
+    dataFile.posts,
+    dataFile.sha,
+    `${archive ? 'Archive' : 'Delete'} blog post: ${removed.title}`,
+    token,
+  );
+
+  if (archive) {
+    const archiveFile = await getGithubFile(GITHUB_ARCHIVE_PATH, token);
+    const archivePosts = archiveFile ? archiveFile.posts : [];
+    archivePosts.unshift({ ...removed, archivedAt: new Date().toISOString() });
+    await putGithubFile(GITHUB_ARCHIVE_PATH, archivePosts, archiveFile?.sha, `Archive blog post: ${removed.title}`, token);
+  }
+
+  return removed;
 }
 
 /* ── Owner access ─────────────────────────────────────── */
@@ -145,7 +184,7 @@ export function renderContentBlock(block) {
   }
 }
 
-export function renderPost(post) {
+export function renderPost(post, { ownerMode = false } = {}) {
   const contentHtml = post.content.map(renderContentBlock).join('');
   const tagsHtml = post.tags?.length
     ? `<ul class="tag-list" aria-label="Tags">${post.tags.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>`
@@ -153,9 +192,13 @@ export function renderPost(post) {
   const timestampHtml = post.createdAt
     ? `<span class="post-timestamp">Posted at ${formatTimestamp(post.createdAt)}</span>`
     : '';
+  const deleteHtml = ownerMode
+    ? `<button type="button" class="post-delete-btn" data-delete-post="${escapeHtml(post.id)}" aria-label="Delete post: ${escapeHtml(post.title)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3m-9 0 1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13M10 11v6M14 11v6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`
+    : '';
 
   return `
     <article class="blog-post" data-reveal aria-labelledby="post-${post.id}">
+      ${deleteHtml}
       <header class="post-header">
         <time class="post-date" datetime="${post.date}">${formatDate(post.date)}</time>
         ${timestampHtml}
@@ -166,12 +209,12 @@ export function renderPost(post) {
     </article>`;
 }
 
-export function renderPosts(posts, container) {
+export function renderPosts(posts, container, ownerMode = false) {
   if (!posts.length) {
     container.innerHTML = '<p class="empty-state">No posts yet. Check back soon.</p>';
     return;
   }
-  container.innerHTML = posts.map(renderPost).join('');
+  container.innerHTML = posts.map((post) => renderPost(post, { ownerMode })).join('');
 }
 
 export function collectTags(posts) {
@@ -183,6 +226,11 @@ export function collectTags(posts) {
 export function filterByTag(posts, tag) {
   if (tag === 'all') return posts;
   return posts.filter((post) => post.tags?.includes(tag));
+}
+
+export function getFeedCopy(tag) {
+  if (tag === 'all') return { kicker: 'All entries', title: 'The trail so far.' };
+  return { kicker: tag, title: `The trail on ${tag}.` };
 }
 
 function escapeHtml(str) {
@@ -449,6 +497,9 @@ function initBlog() {
   const container = document.getElementById('posts-container');
   const loading = document.querySelector('[data-loading]');
   const filtersEl = document.querySelector('.blog-filters');
+  const feedKicker = document.querySelector('[data-feed-kicker]');
+  const feedTitle = document.querySelector('[data-feed-title]');
+  const feedStatus = document.querySelector('[data-feed-status]');
 
   initSiteChrome();
   initOwnerAccess();
@@ -456,11 +507,110 @@ function initBlog() {
   let allPosts = [];
   let activeTag = 'all';
 
+  function isOwnerMode() {
+    return isLocalHost() || Boolean(getOwnerToken());
+  }
+
   function render() {
     const filtered = filterByTag(allPosts, activeTag);
-    renderPosts(filtered, container);
+    renderPosts(filtered, container, isOwnerMode());
+    const copy = getFeedCopy(activeTag);
+    if (feedKicker) feedKicker.textContent = copy.kicker;
+    if (feedTitle) feedTitle.textContent = copy.title;
     initReveal();
   }
+
+  function showFeedStatus(message, isError) {
+    if (!feedStatus) return;
+    feedStatus.textContent = message;
+    feedStatus.style.color = isError ? '#c83232' : 'var(--navy)';
+    setTimeout(() => { feedStatus.textContent = ''; }, 3500);
+  }
+
+  /* ── Delete modal ─────────────────────────────────────── */
+
+  const deleteModal = document.querySelector('[data-delete-modal]');
+  const deleteModalBody = document.querySelector('[data-delete-modal-body]');
+  const deleteCancelBtn = document.querySelector('[data-delete-cancel]');
+  const deleteArchiveBtn = document.querySelector('[data-delete-archive]');
+  const deleteForeverBtn = document.querySelector('[data-delete-forever]');
+  let pendingDelete = null;
+
+  function openDeleteModal(post, triggerBtn) {
+    pendingDelete = { postId: post.id, triggerBtn };
+    if (deleteModalBody) {
+      deleteModalBody.textContent = `"${post.title}" — archive it to keep a copy, or delete it permanently. Permanent deletion can't be undone.`;
+    }
+    if (deleteModal) {
+      deleteModal.hidden = false;
+      deleteArchiveBtn?.focus();
+    }
+  }
+
+  function closeDeleteModal() {
+    if (deleteModal) deleteModal.hidden = true;
+    pendingDelete = null;
+  }
+
+  function cancelDelete() {
+    const triggerBtn = pendingDelete?.triggerBtn;
+    if (triggerBtn) triggerBtn.disabled = false;
+    closeDeleteModal();
+    triggerBtn?.focus();
+  }
+
+  async function performDelete(archive) {
+    if (!pendingDelete) return;
+    const { postId, triggerBtn } = pendingDelete;
+    [deleteArchiveBtn, deleteForeverBtn, deleteCancelBtn].forEach((b) => { if (b) b.disabled = true; });
+
+    try {
+      if (isLocalHost()) {
+        const mode = archive ? 'archive' : 'forever';
+        const res = await fetch(`/api/posts/${encodeURIComponent(postId)}?mode=${mode}`, { method: 'DELETE' });
+        const payload = await res.json().catch(() => null);
+        if (!res.ok) throw new Error(payload?.error || `HTTP ${res.status}`);
+      } else {
+        const token = getOwnerToken();
+        if (!token) throw new Error('Sign in as owner first.');
+        await deletePostViaGithubApi(postId, token, { archive });
+      }
+
+      allPosts = allPosts.filter((p) => p.id !== postId);
+      syncFilterButtons(collectTags(allPosts));
+      render();
+      showFeedStatus(archive ? 'Post archived.' : 'Post deleted permanently.');
+      closeDeleteModal();
+    } catch (err) {
+      showFeedStatus(`Couldn't delete: ${err.message}`, true);
+      if (triggerBtn) triggerBtn.disabled = false;
+      closeDeleteModal();
+    } finally {
+      [deleteArchiveBtn, deleteForeverBtn, deleteCancelBtn].forEach((b) => { if (b) b.disabled = false; });
+    }
+  }
+
+  deleteCancelBtn?.addEventListener('click', cancelDelete);
+  deleteArchiveBtn?.addEventListener('click', () => performDelete(true));
+  deleteForeverBtn?.addEventListener('click', () => performDelete(false));
+  deleteModal?.addEventListener('click', (event) => {
+    if (event.target === deleteModal) cancelDelete();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && deleteModal && !deleteModal.hidden) cancelDelete();
+  });
+
+  container.addEventListener('click', (event) => {
+    const btn = event.target.closest('[data-delete-post]');
+    if (!btn || !isOwnerMode()) return;
+
+    const postId = btn.dataset.deletePost;
+    const post = allPosts.find((p) => p.id === postId);
+    if (!post) return;
+
+    btn.disabled = true;
+    openDeleteModal(post, btn);
+  });
 
   function syncFilterButtons(tags) {
     if (!filtersEl) return;

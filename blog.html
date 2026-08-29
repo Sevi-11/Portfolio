@@ -99,20 +99,34 @@
       <div class="shell">
         <header class="section-heading" data-reveal>
           <div>
-            <p class="section-kicker">All entries</p>
-            <h2 id="feed-title">The latest from here.</h2>
+            <p class="section-kicker" data-feed-kicker>All entries</p>
+            <h2 id="feed-title" data-feed-title>The trail so far.</h2>
           </div>
           <div class="blog-filters" data-reveal>
             <button class="filter-btn is-active" type="button" data-tag="all">All</button>
           </div>
         </header>
 
+        <p class="feed-status" data-feed-status role="status" tabindex="-1"></p>
         <div class="posts-container" id="posts-container" role="feed" aria-label="Blog posts">
           <p class="loading-message" data-loading>Loading posts...</p>
         </div>
       </div>
     </section>
   </main>
+
+  <div class="modal-overlay" data-delete-modal hidden>
+    <div class="modal-card" role="alertdialog" aria-modal="true" aria-labelledby="delete-modal-title" aria-describedby="delete-modal-body">
+      <p class="modal-kicker">Remove post</p>
+      <h3 id="delete-modal-title" data-delete-modal-title>Delete this post?</h3>
+      <p class="modal-body" id="delete-modal-body" data-delete-modal-body></p>
+      <div class="modal-actions">
+        <button type="button" class="button button-secondary" data-delete-cancel>Cancel</button>
+        <button type="button" class="modal-btn modal-btn-archive" data-delete-archive>Archive</button>
+        <button type="button" class="modal-btn modal-btn-forever" data-delete-forever>Delete permanently</button>
+      </div>
+    </div>
+  </div>
 
   <footer class="site-footer">
     <div class="shell">
