@@ -5,7 +5,6 @@ import {
   getMenuState,
   getProjectMessage,
   getFormMessage,
-  buildGmailComposeUrl,
   isInspectionShortcut,
   selectActiveSection,
 } from '../script.js';
@@ -22,32 +21,16 @@ test('project feedback names the selected project without inventing a link', () 
 test('form feedback is local and honest', () => {
   assert.equal(
     getFormMessage('Ada'),
-    'Gmail opened for Ada. Review the draft and press Send to deliver your message.',
+    'Thanks, Ada — your message is on its way.',
   );
   assert.equal(
     getFormMessage('   '),
-    'Gmail opened. Review the draft and press Send to deliver your message.',
+    'Thanks — your message is on its way.',
   );
   assert.equal(
     getFormMessage('Ada', false),
-    'Gmail was blocked. Allow pop-ups, then submit the form again.',
+    "Couldn't send your message. Please try again in a moment, or email me directly.",
   );
-});
-
-test('Gmail compose URL addresses the owner and includes every required field', () => {
-  const url = new URL(buildGmailComposeUrl({
-    name: 'Ada Lovelace',
-    email: 'ada@example.test',
-    message: 'Let us build something useful.',
-  }));
-
-  assert.equal(url.origin + url.pathname, 'https://mail.google.com/mail/');
-  assert.equal(url.searchParams.get('view'), 'cm');
-  assert.equal(url.searchParams.get('fs'), '1');
-  assert.equal(url.searchParams.get('to'), 'vinas.seanvincentvien@gmail.com');
-  assert.match(url.searchParams.get('su'), /Portfolio inquiry from Ada Lovelace/);
-  assert.match(url.searchParams.get('body'), /ada@example\.test/);
-  assert.match(url.searchParams.get('body'), /Let us build something useful\./);
 });
 
 test('active section chooses the intersecting entry with greatest ratio', () => {
@@ -79,8 +62,8 @@ test('document provides the four-section accessible portfolio structure', async 
   assert.equal((html.match(/<button[^>]+data-project-name=/g) ?? []).length, 0);
   assert.equal((html.match(/<a[^>]+data-project-name=/g) ?? []).length, 7);
   assert.equal((html.match(/class="github-mark"/g) ?? []).length, 7);
-  assert.match(html, /type="submit">Send with Gmail/);
-  assert.match(html, /Gmail opens a prepared draft/);
+  assert.match(html, /type="submit">Send message/);
+  assert.match(html, /Sent directly — no email client required\./);
   assert.match(html, /<label[^>]+for="name"/);
   assert.match(html, /<label[^>]+for="email"/);
   assert.match(html, /<label[^>]+for="message"/);

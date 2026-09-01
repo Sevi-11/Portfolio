@@ -118,6 +118,17 @@ p, li, h1, h2, h3 { overflow-wrap: anywhere; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 1.8rem; }
 .button { min-height: 3.25rem; display: inline-flex; align-items: center; justify-content: center; gap: 0.85rem; padding: 0.8rem 1.35rem; border: 1px solid transparent; border-radius: 999px; cursor: pointer; font: 700 0.82rem/1 var(--friendly); text-decoration: none; transition: color var(--fast), background var(--fast), border-color var(--fast), box-shadow var(--fast), transform var(--fast) var(--ease); }
 .button-primary { background: var(--navy); color: var(--paper); box-shadow: 0 0.7rem 1.8rem rgba(10, 17, 40, 0.17); }
+.button:disabled { opacity: 0.65; cursor: default; box-shadow: none; transform: none; }
+
+.btn-dots { display: inline-flex; align-items: center; gap: 0.32rem; }
+.btn-dots span { width: 0.4rem; height: 0.4rem; border-radius: 50%; background: currentColor; animation: btn-dots-bounce 1.2s ease-in-out infinite; }
+.btn-dots span:nth-child(2) { animation-delay: 0.15s; }
+.btn-dots span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes btn-dots-bounce {
+  0%, 80%, 100% { opacity: 0.3; transform: scale(0.7); }
+  40% { opacity: 1; transform: scale(1); }
+}
 .button-secondary { border-color: var(--line); background: rgba(255, 253, 248, 0.42); color: var(--navy); }
 .button:active { transform: translateY(1px); box-shadow: none; }
 .hero-aside { align-self: end; padding: 1.5rem 0 0 1.5rem; border-left: 1px solid var(--line); color: var(--slate); font: 500 0.78rem/1.6 var(--friendly); }
@@ -159,6 +170,28 @@ p, li, h1, h2, h3 { overflow-wrap: anywhere; }
 .project-action svg { width: 1rem; height: 1rem; flex: 0 0 1rem; fill: currentColor; }
 .project-action span { display: inline-block; transition: transform var(--fast) var(--ease); }
 .status-message { min-height: 1.7rem; margin: 1.5rem 0 0; color: inherit; font: 600 0.78rem/1.5 var(--friendly); }
+
+.contact-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  z-index: 200;
+  min-height: 0;
+  margin: 0;
+  max-width: min(90vw, 26rem);
+  padding: 0.9rem 1.35rem;
+  border-radius: var(--radius-md);
+  background: var(--navy);
+  color: var(--paper);
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  transform: translate(-50%, 0.75rem);
+  pointer-events: none;
+  transition: opacity var(--fast), transform var(--medium) var(--ease);
+}
+
+.contact-toast.is-visible { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.contact-toast.is-error { background: #c83232; }
 
 .about { background: var(--cream); }
 .about-heading .section-kicker { color: var(--slate); }
@@ -250,7 +283,7 @@ p, li, h1, h2, h3 { overflow-wrap: anywhere; }
 .field label { display: block; margin-bottom: 0.5rem; font: 700 0.7rem/1.4 var(--friendly); text-transform: uppercase; }
 .field input, .field textarea { width: 100%; border: 1px solid rgba(10,17,40,0.22); border-radius: var(--radius-sm); background: rgba(255,253,248,0.7); color: var(--navy); transition: border-color var(--fast), background var(--fast), box-shadow var(--fast); }
 .field input { min-height: 3.25rem; padding: 0 0.9rem; }
-.field textarea { min-height: 7.5rem; padding: 0.9rem; resize: vertical; }
+.field textarea { min-height: 7.5rem; max-height: 28rem; padding: 0.9rem; resize: none; overflow-y: auto; }
 .field input:focus, .field textarea:focus { border-color: var(--navy); outline: 0; background: var(--paper); box-shadow: 0 0 0 3px rgba(10,17,40,0.12); }
 .form-footer { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
 .form-footer p { margin: 0; color: var(--slate); font: 500 0.7rem/1.4 var(--friendly); }
