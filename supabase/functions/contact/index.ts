@@ -111,7 +111,7 @@ Deno.serve(async (req) => {
       from: `"${displayName}" <${gmailUser}>`,
       to: gmailUser,
       replyTo: email,
-      subject: `Portfolio inquiry from ${name}`,
+      subject: `Portfolio inquiry from ${displayName}`,
       content: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
       html: buildEmailHtml(name, email, message),
     });
