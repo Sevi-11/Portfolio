@@ -59,6 +59,8 @@ p, li, h1, h2, h3 { overflow-wrap: anywhere; }
 .shell { width: min(100% - (var(--gutter) * 2), var(--shell)); margin-inline: auto; }
 .section { padding-block: var(--section-space); scroll-margin-top: 4.5rem; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+/* Spam honeypot: off-screen rather than display:none, which some bots skip. */
+.field-trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
 
 .skip-link {
   position: fixed;

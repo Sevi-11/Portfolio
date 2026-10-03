@@ -8,6 +8,21 @@ const ALLOWED_ORIGINS = new Set([
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// A portfolio inbox sees a handful of messages a day, so a low ceiling costs
+// real visitors nothing and stops a script from flooding the inbox (or burning
+// Gmail's daily send limit). It is per isolate and resets when one recycles,
+// so it bounds a burst rather than enforcing an exact quota.
+const SEND_WINDOW_MS = 10 * 60 * 1000;
+const MAX_SENDS_PER_WINDOW = 10;
+const recentSends: number[] = [];
+
+function allowSend(now = Date.now()) {
+  while (recentSends.length && now - recentSends[0] > SEND_WINDOW_MS) recentSends.shift();
+  if (recentSends.length >= MAX_SENDS_PER_WINDOW) return false;
+  recentSends.push(now);
+  return true;
+}
+
 function corsHeaders(origin: string | null) {
   const allow = origin && ALLOWED_ORIGINS.has(origin) ? origin : "";
   return {
@@ -65,8 +80,15 @@ function buildEmailHtml(name: string, email: string, message: string) {
 }
 
 Deno.serve(async (req) => {
-  const headers = corsHeaders(req.headers.get("origin"));
+  const origin = req.headers.get("origin");
+  const headers = corsHeaders(origin);
 
+  // CORS only stops a browser from READING the reply; the request itself still
+  // runs. Refusing unknown origins here is what keeps other sites (and scripts
+  // that don't bother faking an Origin) from sending mail through this.
+  if (!origin || !ALLOWED_ORIGINS.has(origin)) {
+    return json({ error: "Origin not allowed." }, 403, headers);
+  }
   if (req.method === "OPTIONS") return new Response(null, { headers });
   if (req.method !== "POST") return json({ error: "Method not allowed." }, 405, headers);
 
@@ -77,6 +99,10 @@ Deno.serve(async (req) => {
     return json({ error: "Invalid request body." }, 400, headers);
   }
 
+  // Honeypot: a field real visitors never see. Answer as if it worked so a
+  // bot has no signal to adapt to.
+  if (String(payload.website ?? "").trim()) return json({ ok: true }, 200, headers);
+
   const name = String(payload.name ?? "").trim().slice(0, 200);
   const email = String(payload.email ?? "").trim().slice(0, 200);
   const message = String(payload.message ?? "").trim().slice(0, 5000);
@@ -86,6 +112,10 @@ Deno.serve(async (req) => {
   }
   if (!EMAIL_RE.test(email)) {
     return json({ error: "A valid email address is required." }, 400, headers);
+  }
+
+  if (!allowSend()) {
+    return json({ error: "Too many messages right now. Please try again later." }, 429, headers);
   }
 
   const gmailUser = Deno.env.get("GMAIL_USER");

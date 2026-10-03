@@ -1,14 +1,10 @@
-import { getMenuState, isInspectionShortcut, selectActiveSection, initSiteChrome, initReveal } from './nav.js';
+import { getMenuState, isInspectionShortcut, selectActiveSection, initSiteChrome, initReveal } from './nav.js?v=20261003';
 
 export { getMenuState, isInspectionShortcut, selectActiveSection };
 
 const SUPABASE_URL = 'https://rznbcbkrzevtnuvuisdp.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ6bmJjYmtyemV2dG51dnVpc2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyNDk5NTQsImV4cCI6MjEwMzgyNTk1NH0.evm81SCQ-t6nTwi6g_Vhxf2B0fW9q6W1b8D4u8dr4nM';
 const CONTACT_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/contact`;
-
-export function getProjectMessage(projectName) {
-  return `${projectName.trim()} case study is being prepared.`;
-}
 
 export function getFormMessage(name, success = true) {
   if (!success) return "Couldn't send your message. Please try again in a moment, or email me directly.";
@@ -21,15 +17,6 @@ export function getFormMessage(name, success = true) {
 function initPortfolio() {
   initSiteChrome({ scrollSpy: true });
   initReveal();
-
-  const projectStatus = document.querySelector('[data-project-status]');
-  document.querySelectorAll('button[data-project-name]').forEach((button) => {
-    button.addEventListener('click', () => {
-      if (!projectStatus) return;
-      projectStatus.textContent = getProjectMessage(button.dataset.projectName ?? 'Project');
-      projectStatus.focus({ preventScroll: true });
-    });
-  });
 
   const contactForm = document.querySelector('[data-contact-form]');
   const formStatus = document.querySelector('[data-form-status]');
@@ -59,6 +46,7 @@ function initPortfolio() {
       name: String(data.get('name') ?? ''),
       email: String(data.get('email') ?? ''),
       message: String(data.get('message') ?? ''),
+      website: String(data.get('website') ?? ''),
     };
 
     const originalBtnContent = submitBtn?.innerHTML;

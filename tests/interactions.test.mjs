@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import {
   getMenuState,
-  getProjectMessage,
   getFormMessage,
   isInspectionShortcut,
   selectActiveSection,
@@ -12,10 +11,6 @@ import {
 test('menu state exposes matching aria and hidden values', () => {
   assert.deepEqual(getMenuState(true), { expanded: 'true', hidden: false });
   assert.deepEqual(getMenuState(false), { expanded: 'false', hidden: true });
-});
-
-test('project feedback names the selected project without inventing a link', () => {
-  assert.equal(getProjectMessage('AIxia'), 'AIxia case study is being prepared.');
 });
 
 test('form feedback is local and honest', () => {

@@ -1,25 +1,87 @@
-import { initSiteChrome, initReveal } from './nav.js';
+import { initSiteChrome, initReveal } from './nav.js?v=20261003';
 
 const GITHUB_OWNER = 'Sevi-11';
 const GITHUB_REPO = 'Portfolio';
 const GITHUB_BRANCH = 'master';
 const GITHUB_DATA_PATH = 'blog-data.json';
 const GITHUB_ARCHIVE_PATH = 'blog-archive.json';
+const MEDIA_DIR = 'assets/blog';
 const OWNER_TOKEN_KEY = 'portfolio_owner_token';
 
 export function isLocalHost(hostname = location.hostname) {
   return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '';
 }
 
+// sessionStorage, not localStorage: every GitHub Pages site under
+// sevi-11.github.io shares one origin, so a token left in localStorage would be
+// readable by any of them. A session-scoped token dies with the tab.
 function getOwnerToken() {
-  try { return localStorage.getItem(OWNER_TOKEN_KEY) || ''; } catch { return ''; }
+  try { return sessionStorage.getItem(OWNER_TOKEN_KEY) || ''; } catch { return ''; }
 }
 
 function setOwnerToken(token) {
   try {
-    if (token) localStorage.setItem(OWNER_TOKEN_KEY, token);
-    else localStorage.removeItem(OWNER_TOKEN_KEY);
-  } catch { /* localStorage unavailable */ }
+    if (token) sessionStorage.setItem(OWNER_TOKEN_KEY, token);
+    else sessionStorage.removeItem(OWNER_TOKEN_KEY);
+  } catch { /* sessionStorage unavailable */ }
+}
+
+// Earlier versions kept the token in localStorage; don't leave it behind.
+function forgetLegacyToken() {
+  try { localStorage.removeItem(OWNER_TOKEN_KEY); } catch { /* localStorage unavailable */ }
+}
+
+export function createPostId() {
+  const bytes = new Uint8Array(3);
+  crypto.getRandomValues(bytes);
+  const suffix = [...bytes].map((b) => b.toString(16).padStart(2, '0')).join('');
+  return `post-${Date.now().toString(36)}-${suffix}`;
+}
+
+// Browsers drop tabs, newlines and other control characters while parsing a
+// URL, so "java\tscript:" still runs. Strip them before checking the scheme,
+// and render the cleaned value rather than the original.
+export function cleanUrl(src) {
+  return String(src ?? '').replace(/[\u0000-\u001F\u007F]/g, '').trim();
+}
+
+function isRelativePath(src) {
+  return Boolean(src) && !src.startsWith('//') && !/^[a-z][a-z0-9+.-]*:/i.test(src);
+}
+
+// Allowed sources per block: https URLs, an inline data: URL of the right kind,
+// or a path inside this site (where uploaded media is stored).
+export function safeMediaSrc(src, kind) {
+  const url = cleanUrl(src);
+  if (kind === 'embed') return /^https:\/\//i.test(url) ? url : '';
+  if (/^https:\/\//i.test(url) && kind === 'image') return url;
+  if (url.toLowerCase().startsWith(`data:${kind}/`)) return url;
+  return isRelativePath(url) ? url : '';
+}
+
+export function isVideoFile(src) {
+  const url = cleanUrl(src);
+  return url.toLowerCase().startsWith('data:video/') || isRelativePath(url);
+}
+
+const MEDIA_EXTENSIONS = { jpeg: 'jpg', 'svg+xml': 'svg', quicktime: 'mov', 'x-matroska': 'mkv' };
+
+export function parseDataUrl(src) {
+  const match = /^data:(image|video)\/([\w.+-]+);base64,(.+)$/i.exec(cleanUrl(src));
+  if (!match) return null;
+  const subtype = match[2].toLowerCase();
+  const ext = (MEDIA_EXTENSIONS[subtype] || subtype).replace(/[^a-z0-9]/g, '') || 'bin';
+  return { kind: match[1].toLowerCase(), ext, base64: match[3] };
+}
+
+// Only names this code generates, so a hand-edited "assets/blog/../x" can never
+// point a delete somewhere else.
+const MEDIA_PATH = new RegExp(`^${MEDIA_DIR}/post-[a-z0-9]+-[a-f0-9]+-\\d+\\.[a-z0-9]+$`);
+
+export function mediaPathsOf(post) {
+  return (post.content ?? [])
+    .map((block) => cleanUrl(block.src))
+    .filter((src) => MEDIA_PATH.test(src));
 }
 
 function encodeBase64Utf8(str) {
@@ -35,33 +97,41 @@ function decodeBase64Utf8(b64) {
   return new TextDecoder().decode(bytes);
 }
 
+function githubContentsUrl(path) {
+  return `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`;
+}
+
+function githubHeaders(token, accept = 'application/vnd.github+json') {
+  return { Authorization: `token ${token}`, Accept: accept };
+}
+
 async function getGithubFile(path, token) {
-  const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`;
-  const res = await fetch(url, {
-    headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github+json' },
-  });
+  const url = `${githubContentsUrl(path)}?ref=${GITHUB_BRANCH}`;
+  const res = await fetch(url, { headers: githubHeaders(token) });
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`Couldn't read ${path} from GitHub (HTTP ${res.status}). Check your token.`);
   const file = await res.json();
-  return { sha: file.sha, posts: JSON.parse(decodeBase64Utf8(file.content)) };
+
+  // The JSON response only inlines files up to 1 MB; past that `content` is
+  // empty and the body has to be requested raw.
+  let text;
+  if (file.encoding === 'base64' && file.content) {
+    text = decodeBase64Utf8(file.content);
+  } else {
+    const raw = await fetch(url, { headers: githubHeaders(token, 'application/vnd.github.raw+json') });
+    if (!raw.ok) throw new Error(`Couldn't read ${path} from GitHub (HTTP ${raw.status}).`);
+    text = await raw.text();
+  }
+  return { sha: file.sha, posts: JSON.parse(text) };
 }
 
-async function putGithubFile(path, posts, sha, message, token) {
-  const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`;
-  const body = {
-    message,
-    content: encodeBase64Utf8(JSON.stringify(posts, null, 2) + '\n'),
-    branch: GITHUB_BRANCH,
-  };
+async function putGithubContent(path, base64Content, sha, message, token) {
+  const body = { message, content: base64Content, branch: GITHUB_BRANCH };
   if (sha) body.sha = sha;
 
-  const res = await fetch(url, {
+  const res = await fetch(githubContentsUrl(path), {
     method: 'PUT',
-    headers: {
-      Authorization: `token ${token}`,
-      Accept: 'application/vnd.github+json',
-      'Content-Type': 'application/json',
-    },
+    headers: { ...githubHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
   if (!res.ok) {
@@ -70,12 +140,48 @@ async function putGithubFile(path, posts, sha, message, token) {
   }
 }
 
+function putGithubFile(path, posts, sha, message, token) {
+  return putGithubContent(path, encodeBase64Utf8(JSON.stringify(posts, null, 2) + '\n'), sha, message, token);
+}
+
+async function deleteGithubFile(path, token) {
+  const meta = await fetch(`${githubContentsUrl(path)}?ref=${GITHUB_BRANCH}`, { headers: githubHeaders(token) });
+  if (meta.status === 404) return;
+  if (!meta.ok) throw new Error(`Couldn't read ${path} from GitHub (HTTP ${meta.status}).`);
+  const { sha } = await meta.json();
+  const res = await fetch(githubContentsUrl(path), {
+    method: 'DELETE',
+    headers: { ...githubHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: `Delete blog media: ${path}`, sha, branch: GITHUB_BRANCH }),
+  });
+  if (!res.ok) throw new Error(`Couldn't delete ${path} from GitHub (HTTP ${res.status}).`);
+}
+
+// Uploaded images and videos become files of their own instead of base64
+// strings inside blog-data.json, which would otherwise grow by the size of
+// every upload and get re-downloaded by every visitor.
+async function uploadMediaViaGithubApi(post, token) {
+  const content = [];
+  for (const [index, block] of post.content.entries()) {
+    const media = parseDataUrl(block.src);
+    if (!media) {
+      content.push(block);
+      continue;
+    }
+    const path = `${MEDIA_DIR}/${post.id}-${index + 1}.${media.ext}`;
+    await putGithubContent(path, media.base64, null, `Add blog media: ${path}`, token);
+    content.push({ ...block, src: path });
+  }
+  return { ...post, content };
+}
+
 async function publishViaGithubApi(post, token) {
   const dataFile = await getGithubFile(GITHUB_DATA_PATH, token);
   if (!dataFile) throw new Error(`${GITHUB_DATA_PATH} not found in repo.`);
-  const updatedPosts = [post, ...dataFile.posts];
+  const published = await uploadMediaViaGithubApi(post, token);
+  const updatedPosts = [published, ...dataFile.posts];
   await putGithubFile(GITHUB_DATA_PATH, updatedPosts, dataFile.sha, `Add blog post: ${post.title}`, token);
-  return post;
+  return published;
 }
 
 async function deletePostViaGithubApi(postId, token, { archive = true } = {}) {
@@ -98,6 +204,13 @@ async function deletePostViaGithubApi(postId, token, { archive = true } = {}) {
     const archivePosts = archiveFile ? archiveFile.posts : [];
     archivePosts.unshift({ ...removed, archivedAt: new Date().toISOString() });
     await putGithubFile(GITHUB_ARCHIVE_PATH, archivePosts, archiveFile?.sha, `Archive blog post: ${removed.title}`, token);
+  } else {
+    // An archived post keeps its media; a permanently deleted one takes it along.
+    // A leftover file is harmless, so a failure here must not report the
+    // (already committed) post deletion as failed.
+    for (const path of mediaPathsOf(removed)) {
+      await deleteGithubFile(path, token).catch((err) => console.warn(err));
+    }
   }
 
   return removed;
@@ -113,6 +226,7 @@ function initOwnerAccess() {
   const unlockBtn = document.querySelector('[data-owner-unlock]');
   const cancelBtn = document.querySelector('[data-owner-cancel]');
   if (!composeSection) return;
+  forgetLegacyToken();
 
   function applyState() {
     const unlocked = isLocalHost() || Boolean(getOwnerToken());
@@ -173,15 +287,34 @@ export function renderContentBlock(block) {
   switch (block.type) {
     case 'text':
       return `<p class="post-text">${escapeHtml(block.body)}</p>`;
-    case 'image':
-      return `<figure class="post-image"><img src="${escapeHtml(block.src)}" alt="${escapeHtml(block.alt || '')}" loading="lazy"></figure>`;
-    case 'video':
-      return block.src.startsWith('data:video')
-        ? `<div class="post-video post-video-file"><video src="${escapeHtml(block.src)}" controls preload="metadata"></video></div>`
-        : `<div class="post-video"><iframe src="${escapeHtml(block.src)}" title="${escapeHtml(block.title || '')}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+    case 'image': {
+      const src = safeMediaSrc(block.src, 'image');
+      if (!src) return '';
+      return `<figure class="post-image"><img src="${escapeHtml(src)}" alt="${escapeHtml(block.alt || '')}" loading="lazy"></figure>`;
+    }
+    case 'video': {
+      if (isVideoFile(block.src)) {
+        const src = safeMediaSrc(block.src, 'video');
+        if (!src) return '';
+        return `<div class="post-video post-video-file"><video src="${escapeHtml(src)}" controls preload="metadata"></video></div>`;
+      }
+      const src = safeMediaSrc(block.src, 'embed');
+      if (!src) return '';
+      return `<div class="post-video"><iframe src="${escapeHtml(src)}" title="${escapeHtml(block.title || '')}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+    }
     default:
       return '';
   }
+}
+
+// Mirrors renderContentBlock: a block it would silently drop is one the
+// composer should refuse to publish.
+export function findUnsafeBlock(blocks) {
+  return blocks.find((block) => {
+    if (block.type === 'image') return !safeMediaSrc(block.src, 'image');
+    if (block.type === 'video') return !safeMediaSrc(block.src, isVideoFile(block.src) ? 'video' : 'embed');
+    return false;
+  }) ?? null;
 }
 
 export function renderPost(post, { ownerMode = false } = {}) {
@@ -258,7 +391,6 @@ function initComposer(onPublished) {
   const now = new Date();
   dateInput.value = now.toISOString().slice(0, 10);
 
-  let blocks = [];
   let blockId = 0;
   let previewVisible = false;
 
@@ -361,7 +493,6 @@ function initComposer(onPublished) {
   function addBlock(type) {
     const el = createBlockField(type);
     blocksList.appendChild(el);
-    blocks.push({ id: ++blockId, type, el });
     if (previewVisible) updatePreview();
   }
 
@@ -390,7 +521,7 @@ function initComposer(onPublished) {
   function buildPostObject() {
     const now = new Date();
     return {
-      id: 'post-' + String(Date.now()).slice(-6),
+      id: createPostId(),
       title: titleInput.value.trim(),
       date: dateInput.value,
       createdAt: now.toISOString(),
@@ -422,7 +553,6 @@ function initComposer(onPublished) {
     tagsInput.value = '';
     dateInput.value = new Date().toISOString().slice(0, 10);
     blocksList.innerHTML = '';
-    blocks = [];
     previewVisible = false;
     previewEl.hidden = true;
     previewCard.innerHTML = '';
@@ -454,6 +584,10 @@ function initComposer(onPublished) {
     const post = buildPostObject();
     if (!post.title) { showStatus('Add a title before publishing.', true); return; }
     if (!post.content.length) { showStatus('Add at least one content block.', true); return; }
+    if (findUnsafeBlock(post.content)) {
+      showStatus('Media links must be https:// URLs or uploaded files.', true);
+      return;
+    }
 
     publishBtn.disabled = true;
     publishBtn.innerHTML = 'Publishing…';

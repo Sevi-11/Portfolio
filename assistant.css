@@ -1,0 +1,148 @@
+/* AIxia site assistant. Built on the tokens in styles.css; the copper accent
+   is the site's own focus colour. Spotlight targets live outside .aixia, so the
+   accent is defined on :root. */
+:root {
+  --aixia-accent: #a65f28;
+  --aixia-accent-soft: rgba(166, 95, 40, 0.12);
+  --aixia-error: #b2382a;
+}
+
+.aixia { font-family: var(--utility); }
+/* The launcher and panel set their own display, which would otherwise beat
+   the browser's default for the hidden attribute and keep them on screen. */
+.aixia [hidden] { display: none !important; }
+
+.aixia-launcher {
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right, 0px));
+  bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+  z-index: 150;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.65rem 1.05rem 0.65rem 0.75rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--navy);
+  color: var(--paper);
+  font: 600 0.88rem/1 var(--utility);
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  transition: transform var(--fast) var(--ease), box-shadow var(--fast);
+}
+.aixia-launcher img { width: 1.4rem; height: 1.4rem; border-radius: 50%; background: var(--paper); }
+.aixia-launcher:hover { transform: translateY(-2px); }
+
+.aixia-panel {
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right, 0px));
+  bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+  z-index: 150;
+  width: min(24rem, calc(100vw - 2rem));
+  height: min(38rem, calc(100dvh - 6.5rem));
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+  color: var(--navy);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+.aixia-panel:not([hidden]) { animation: aixia-enter var(--medium) var(--ease); }
+@keyframes aixia-enter { from { opacity: 0; transform: translateY(0.75rem); } }
+
+.aixia-head { display: flex; align-items: center; gap: 0.45rem; padding: 0.8rem 0.85rem 0.8rem 1.1rem; border-bottom: 1px solid var(--line); }
+.aixia-head-text { flex: 1; min-width: 0; }
+.aixia-title { margin: 0; font: 650 1.05rem/1.2 var(--display); letter-spacing: -0.01em; }
+.aixia-context { margin: 0.2rem 0 0; overflow: hidden; color: var(--slate); font: 500 0.72rem/1.3 var(--friendly); white-space: nowrap; text-overflow: ellipsis; }
+.aixia-context::before { content: ""; display: inline-block; width: 0.42rem; height: 0.42rem; margin-right: 0.4rem; border-radius: 50%; background: var(--aixia-accent); vertical-align: 0.06rem; }
+.aixia-icon { flex: none; width: 2.1rem; height: 2.1rem; display: grid; place-items: center; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--navy); cursor: pointer; }
+.aixia-icon svg { width: 1rem; height: 1rem; }
+.aixia-icon:hover { border-color: var(--navy); }
+
+.aixia-log { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 0.7rem; padding: 1rem 1.1rem; overflow-y: auto; overscroll-behavior: contain; }
+.aixia-msg { max-width: 92%; padding: 0.65rem 0.85rem; border-radius: 1rem; font-size: 0.9rem; line-height: 1.55; overflow-wrap: anywhere; }
+.aixia-msg.user { align-self: flex-end; border-bottom-right-radius: 0.3rem; background: var(--navy); color: var(--paper); white-space: pre-wrap; }
+.aixia-msg.ai { align-self: flex-start; border: 1px solid var(--line); border-bottom-left-radius: 0.3rem; background: var(--cream); }
+.aixia-msg.ai > * + * { margin-top: 0.5rem; }
+.aixia-msg p { margin: 0; }
+.aixia-msg ul, .aixia-msg ol { margin: 0; padding-left: 1.15rem; }
+.aixia-msg li + li { margin-top: 0.2rem; }
+.aixia-msg a { color: var(--aixia-accent); }
+.aixia-msg code { padding: 0.05rem 0.3rem; border-radius: 0.3rem; background: var(--aixia-accent-soft); font-size: 0.85em; }
+.aixia-intro { color: var(--slate); }
+.aixia-status { color: var(--slate); font-style: italic; }
+.aixia-error { color: var(--aixia-error); }
+
+.aixia-cite {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  margin-left: 0.15rem;
+  padding: 0 0.3rem;
+  border: 0;
+  border-radius: 0.35rem;
+  background: var(--aixia-accent-soft);
+  color: var(--aixia-accent);
+  font: 650 0.68rem/1 var(--utility);
+  vertical-align: 0.1em;
+}
+button.aixia-cite { cursor: pointer; }
+button.aixia-cite:hover { background: var(--aixia-accent); color: var(--paper); }
+span.aixia-cite { cursor: help; }
+
+.aixia-show {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--aixia-accent);
+  color: var(--paper);
+  font: 600 0.78rem/1.2 var(--utility);
+  text-align: left;
+  cursor: pointer;
+}
+.aixia-show:hover { background: var(--navy); }
+
+.aixia-suggestions { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0 1.1rem 0.65rem; }
+.aixia-suggestions:empty { display: none; }
+.aixia-chip { padding: 0.4rem 0.75rem; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--navy); font: 500 0.78rem/1.25 var(--utility); text-align: left; cursor: pointer; }
+.aixia-chip:hover { border-color: var(--navy); }
+
+.aixia-form { display: flex; align-items: flex-end; gap: 0.5rem; padding: 0.6rem 0.75rem 0.6rem 1.1rem; border-top: 1px solid var(--line); }
+.aixia-form:focus-within { box-shadow: inset 0 2px 0 var(--aixia-accent); }
+.aixia-form textarea { flex: 1; min-width: 0; max-height: 8rem; padding: 0.5rem 0; border: 0; outline: none; background: transparent; color: var(--navy); font: 400 0.92rem/1.45 var(--utility); resize: none; }
+.aixia-send { flex: none; width: 2.3rem; height: 2.3rem; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: var(--navy); color: var(--paper); cursor: pointer; }
+.aixia-send svg { width: 1.05rem; height: 1.05rem; }
+.aixia-send:disabled { opacity: 0.45; cursor: progress; }
+.aixia-note { margin: 0; padding: 0 1.1rem 0.7rem; color: var(--slate); font: 500 0.66rem/1.4 var(--friendly); }
+
+/* "Show me" and citation targets. */
+.aixia-spotlight { outline: 3px solid var(--aixia-accent) !important; outline-offset: 6px; animation: aixia-pulse 1.2s var(--ease) 2; }
+@keyframes aixia-pulse { 50% { outline-offset: 12px; outline-color: rgba(166, 95, 40, 0.3); } }
+
+/* On a phone the panel is a full-screen sheet, at the same breakpoint the nav
+   collapses. */
+@media (max-width: 47.5rem) {
+  .aixia-panel {
+    inset: 0;
+    width: auto;
+    height: auto;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    border: 0;
+    border-radius: 0;
+  }
+  .aixia-msg { max-width: 96%; }
+  body.aixia-sheet-open { overflow: hidden; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aixia-launcher, .aixia-launcher:hover { transform: none; transition: none; }
+  .aixia-panel:not([hidden]) { animation: none; }
+  .aixia-spotlight { animation: none; }
+}

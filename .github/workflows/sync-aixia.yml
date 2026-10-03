@@ -1,0 +1,42 @@
+# Keeps AIxia's site assistant in step with the website.
+#
+# On every push to master that changes what the site says, rebuild the
+# knowledge entries and send them to the AIxia backend, which re-embeds only
+# the entries that changed. Blog posts published from the owner panel are
+# commits to master too, so they sync without any extra step.
+#
+# Needs, under Settings -> Secrets and variables -> Actions:
+#   variable AIXIA_API_URL     the Render backend's URL, e.g. https://aixia-backend.onrender.com
+#   secret   AIXIA_SYNC_TOKEN  the same value as KNOWLEDGE_SYNC_TOKEN on Render
+name: Sync AIxia knowledge
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - index.html
+      - blog.html
+      - blog-data.json
+      - knowledge/**
+      - scripts/build-knowledge.mjs
+      - assistant.js
+  workflow_dispatch:
+
+concurrency:
+  group: sync-aixia
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build and send knowledge
+        run: node scripts/build-knowledge.mjs --sync
+        env:
+          AIXIA_API_URL: ${{ vars.AIXIA_API_URL }}
+          AIXIA_SYNC_TOKEN: ${{ secrets.AIXIA_SYNC_TOKEN }}

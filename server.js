@@ -1,11 +1,13 @@
 import { createServer } from 'node:http';
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createPostId, findUnsafeBlock, mediaPathsOf, parseDataUrl } from './blog.js';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const dataFile = join(root, 'blog-data.json');
 const archiveFile = join(root, 'blog-archive.json');
+const mediaDir = 'assets/blog';
 const port = process.env.PORT ? Number(process.env.PORT) : 5173;
 const maxBodyBytes = 30 * 1024 * 1024;
 
@@ -20,6 +22,11 @@ const mimeTypes = {
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
   '.pdf': 'application/pdf',
+  '.webp': 'image/webp',
+  '.gif': 'image/gif',
+  '.mp4': 'video/mp4',
+  '.webm': 'video/webm',
+  '.mov': 'video/quicktime',
 };
 
 function readBody(req) {
@@ -66,9 +73,10 @@ function sanitizePost(input) {
       })
     : [];
   if (!content.length) throw new Error('At least one content block is required.');
+  if (findUnsafeBlock(content)) throw new Error('Media links must be https:// URLs or uploaded files.');
 
   return {
-    id: 'post-' + Date.now().toString(36),
+    id: createPostId(),
     title,
     date,
     createdAt: new Date().toISOString(),
@@ -77,11 +85,29 @@ function sanitizePost(input) {
   };
 }
 
+// Same layout the GitHub publish path uses: uploads become files under
+// assets/blog/ rather than base64 strings inside blog-data.json.
+async function storeMedia(post) {
+  const content = [];
+  for (const [index, block] of post.content.entries()) {
+    const media = parseDataUrl(block.src);
+    if (!media) {
+      content.push(block);
+      continue;
+    }
+    const path = `${mediaDir}/${post.id}-${index + 1}.${media.ext}`;
+    await mkdir(join(root, mediaDir), { recursive: true });
+    await writeFile(join(root, path), Buffer.from(media.base64, 'base64'));
+    content.push({ ...block, src: path });
+  }
+  return { ...post, content };
+}
+
 async function handlePublish(req, res) {
   try {
     const raw = await readBody(req);
     const payload = JSON.parse(raw || '{}');
-    const post = sanitizePost(payload);
+    const post = await storeMedia(sanitizePost(payload));
 
     const existingRaw = await readFile(dataFile, 'utf8').catch(() => '[]');
     const posts = JSON.parse(existingRaw || '[]');
@@ -115,6 +141,8 @@ async function handleDelete(req, res, postId, archive) {
       const archivePosts = JSON.parse(archiveRaw || '[]');
       archivePosts.unshift({ ...removed, archivedAt: new Date().toISOString() });
       await writeFile(archiveFile, JSON.stringify(archivePosts, null, 2) + '\n', 'utf8');
+    } else {
+      await Promise.all(mediaPathsOf(removed).map((path) => rm(join(root, path), { force: true })));
     }
 
     res.writeHead(200, { 'Content-Type': 'application/json' });

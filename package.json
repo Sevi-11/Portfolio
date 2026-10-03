@@ -1,0 +1,15 @@
+{
+  "name": "portfolio",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test tests/interactions.test.mjs tests/blog.test.mjs tests/assistant.test.mjs tests/knowledge.test.mjs",
+    "test:browser": "node tests/browser_check.mjs",
+    "knowledge": "node scripts/build-knowledge.mjs",
+    "knowledge:sync": "node scripts/build-knowledge.mjs --sync"
+  },
+  "devDependencies": {
+    "playwright": "^1"
+  }
+}
