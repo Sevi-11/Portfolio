@@ -82,6 +82,7 @@ test('body contains only the approved external and email destinations', async ()
 
   const approvedProjects = [
     'https://github.com/Sevi-11/Aixia_Project',
+    'https://aixia-project.vercel.app/',
     'https://github.com/Sevi-11/SentryScan',
     'https://github.com/Sevi-11/SMOKi_Project',
     'https://github.com/Sevi-11/AeroBand_Project',
@@ -90,12 +91,12 @@ test('body contains only the approved external and email destinations', async ()
     'https://github.com/Sevi-11/UnsupervisedLearning-Apriori',
   ];
 
-  assert.equal(destinations.length, 13);
+  assert.equal(destinations.length, 14);
   assert.deepEqual([...new Set(destinations)].sort(), [...approvedProfiles, ...approvedProjects].sort());
   assert.equal((body.match(/class="social-links"/g) ?? []).length, 2);
   assert.equal((body.match(/class="social-link"/g) ?? []).length, 6);
   assert.equal((body.match(/aria-label="(GitHub|LinkedIn|Email)"/g) ?? []).length, 6);
-  assert.equal((body.match(/target="_blank" rel="noopener noreferrer"/g) ?? []).length, 11);
+  assert.equal((body.match(/target="_blank" rel="noopener noreferrer"/g) ?? []).length, 12);
 });
 
 test('project repository destinations are assigned respectfully', async () => {
